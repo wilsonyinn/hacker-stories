@@ -39,7 +39,7 @@ const storiesReducer = (state, action) => {
       return {
         ...state,
         data: state.data.filter(
-          story => action.payload.objectID !== story.objectID
+          (story) => action.payload.objectID !== story.objectID
         ),
       };
     default:
@@ -58,14 +58,14 @@ const App = () => {
     { data: [], isLoading: false, isError: false }
   );
 
-  React.useEffect(() => {
+  const handleFetchStories = React.useCallback(() => {
     if (!searchTerm) return;
 
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
     fetch(`${API_ENDPOINT}${searchTerm}`)
-      .then(response => response.json())
-      .then(result => {
+      .then((response) => response.json())
+      .then((result) => {
         dispatchStories({
           type: 'STORIES_FETCH_SUCCESS',
           payload: result.hits,
@@ -76,14 +76,18 @@ const App = () => {
       );
   }, [searchTerm]);
 
-  const handleRemoveStory = item => {
+  React.useEffect(() => {
+    handleFetchStories();
+  }, [handleFetchStories]);
+
+  const handleRemoveStory = (item) => {
     dispatchStories({
       type: 'REMOVE_STORY',
       payload: item,
     });
   };
 
-  const handleSearch = event => {
+  const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
 
@@ -145,7 +149,7 @@ const InputWithLabel = ({
 };
 
 const List = ({ list, onRemoveItem }) =>
-  list.map(item => (
+  list.map((item) => (
     <Item
       key={item.objectID}
       item={item}
